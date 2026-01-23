@@ -21,5 +21,7 @@ class RequestLoginOtpUseCase:
         phone = normalize_e164(input_dto.phone)
         code = f"{secrets.randbelow(1_000_000):06d}"
         self._otp_repo.create_login_otp(phone=phone, code=code, ttl_seconds=self._ttl_seconds)
-        self._otp_sender.send_whatsapp_otp(to_phone=phone, code=code)
+        # Convert ttl_seconds to minutes for message template
+        expires_minutes = int((self._ttl_seconds + 59) // 60)
+        self._otp_sender.send_whatsapp_otp(to_phone=phone, code=code, expires_in_minutes=expires_minutes)
 

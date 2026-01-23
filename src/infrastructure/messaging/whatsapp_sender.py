@@ -12,12 +12,14 @@ class TwilioWhatsAppOtpSender(OtpSenderPort):
         self._client = Client(account_sid, auth_token)
         self._from = from_whatsapp
 
-    def send_whatsapp_otp(self, *, to_phone: str, code: str) -> None:
+    def send_whatsapp_otp(self, *, to_phone: str, code: str, expires_in_minutes: int) -> None:
         # Twilio expects WhatsApp addresses like: "whatsapp:+201234567890"
+        # Message body follows the requested template format:
+        body = f"Your OTP is {code}. It expires in {expires_in_minutes} minutes."
         self._client.messages.create(
             from_=f"whatsapp:{self._from}",
             to=f"whatsapp:{to_phone}",
-            body=f"Your login code is: {code}",
+            body=body,
         )
 
 
@@ -26,6 +28,6 @@ class DevLoggingWhatsAppOtpSender(OtpSenderPort):
     For local/dev/testing: avoids external calls. Logs OTP to server console.
     """
 
-    def send_whatsapp_otp(self, *, to_phone: str, code: str) -> None:
-        logger.info("DEV OTP for %s is %s", to_phone, code)
+    def send_whatsapp_otp(self, *, to_phone: str, code: str, expires_in_minutes: int) -> None:
+        logger.info("DEV OTP for %s: %s (expires in %d minutes)", to_phone, code, expires_in_minutes)
 
