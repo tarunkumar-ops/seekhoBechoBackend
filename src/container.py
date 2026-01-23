@@ -9,6 +9,7 @@ from src.infrastructure.messaging.whatsapp_sender import (
 )
 from src.infrastructure.persistence.repositories.otp_repository import DjangoLoginOtpRepository
 from src.infrastructure.persistence.repositories.user_repository import DjangoUserRepository
+from src.application.use_cases.refresh_tokens import RefreshTokensUseCase
 
 
 class Container:
@@ -37,6 +38,9 @@ class Container:
             user_repo=self._user_repo,
             token_provider=self._token_provider,
         )
+
+    def refresh_tokens(self) -> RefreshTokensUseCase:
+        return RefreshTokensUseCase(token_provider=self._token_provider)
 
 
 _container: Container | None = None

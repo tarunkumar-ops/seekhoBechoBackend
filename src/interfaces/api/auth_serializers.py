@@ -9,3 +9,7 @@ class VerifyOtpSerializer(serializers.Serializer):
     phone = serializers.CharField()
     code = serializers.CharField()
 
+ 
+class RefreshSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+

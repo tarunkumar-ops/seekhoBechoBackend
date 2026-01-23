@@ -70,6 +70,7 @@ ROOT_URLCONF = 'config.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+AUTH_USER_MODEL = 'persistence.SbUser'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

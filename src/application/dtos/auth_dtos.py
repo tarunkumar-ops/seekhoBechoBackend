@@ -19,3 +19,14 @@ class VerifyOtpOutput:
     access: str
     refresh: str
 
+
+@dataclass(frozen=True)
+class RefreshTokenInput:
+    refresh: str
+
+
+@dataclass(frozen=True)
+class RefreshTokenOutput:
+    access: str
+    refresh: str
+

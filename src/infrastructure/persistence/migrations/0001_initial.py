@@ -26,4 +26,165 @@ class Migration(migrations.Migration):
                 'indexes': [models.Index(fields=['phone', '-created_at'], name='persistence_phone_6f8d8b_idx')],
             },
         ),
+        migrations.CreateModel(
+            name='Country',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=120, unique=True)),
+                ('iso2', models.CharField(max_length=2, null=True, blank=True, unique=True)),
+                ('iso3', models.CharField(max_length=3, null=True, blank=True, unique=True)),
+                ('status', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+                'db_table': 'sb_country',
+            },
+        ),
+        migrations.CreateModel(
+            name='InterestedPlatform',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=120, unique=True)),
+                ('slug', models.CharField(max_length=140, null=True, blank=True, unique=True)),
+                ('sort_order', models.IntegerField(default=0)),
+                ('status', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+                'db_table': 'sb_interested_platform',
+                'indexes': [
+                    models.Index(fields=['status'], name='idx_sb_interst_platform_status'),
+                    models.Index(fields=['sort_order'], name='idx_sb_interst_platform_sort'),
+                ],
+            },
+        ),
+        migrations.CreateModel(
+            name='Language',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=120, unique=True)),
+                ('status', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+                'db_table': 'sb_language',
+                'indexes': [
+                    models.Index(fields=['status'], name='idx_sb_language_status'),
+                ],
+            },
+        ),
+        migrations.CreateModel(
+            name='State',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=120)),
+                ('status', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('country', models.ForeignKey(to='persistence.Country', on_delete=models.RESTRICT)),
+            ],
+            options={
+                'db_table': 'sb_state',
+                'constraints': [
+                    models.UniqueConstraint(fields=['country', 'title'], name='sb_state_country_title_uniq'),
+                ],
+                'indexes': [
+                    models.Index(fields=['country'], name='idx_sb_state_country_id'),
+                    models.Index(fields=['title'], name='idx_sb_state_title'),
+                ],
+            },
+        ),
+        migrations.CreateModel(
+            name='Occupation',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=120, unique=True)),
+                ('is_active', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+                'db_table': 'occupations',
+                'indexes': [
+                    models.Index(fields=['title'], name='idx_occupations_title'),
+                ],
+            },
+        ),
+        migrations.CreateModel(
+            name='City',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('country_name', models.CharField(max_length=120)),
+                ('state_name', models.CharField(max_length=120)),
+                ('title', models.CharField(max_length=120)),
+                ('status', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('country', models.ForeignKey(to='persistence.Country', on_delete=models.RESTRICT)),
+                ('state', models.ForeignKey(to='persistence.State', on_delete=models.RESTRICT)),
+            ],
+            options={
+                'db_table': 'sb_city',
+                'constraints': [
+                    models.UniqueConstraint(fields=['state', 'title'], name='sb_city_state_title_uniq'),
+                ],
+                'indexes': [
+                    models.Index(fields=['state', 'title'], name='idx_sb_city_state_title'),
+                ],
+            },
+        ),
+        migrations.CreateModel(
+        name='SbUser',
+        fields=[
+            ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+
+            # --- Django auth required fields ---
+            ('password', models.CharField(max_length=128)),
+            ('last_login', models.DateTimeField(blank=True, null=True)),
+            ('is_staff', models.BooleanField(default=False)),
+            ('is_superuser', models.BooleanField(default=False)),
+
+            # --- Your fields ---
+            ('user_code', models.CharField(max_length=30, unique=True)),
+            ('full_name', models.CharField(max_length=150)),
+            ('whatsapp_number', models.CharField(max_length=20, unique=True)),
+            ('email', models.EmailField(max_length=190, null=True, blank=True)),
+
+            ('country_name', models.CharField(max_length=190, null=True, blank=True)),
+            ('state_name', models.CharField(max_length=190, null=True, blank=True)),
+            ('city_name', models.CharField(max_length=190, null=True, blank=True)),
+            ('platform_name', models.CharField(max_length=190, null=True, blank=True)),
+            ('occupation_name', models.CharField(max_length=190, null=True, blank=True)),
+            ('language_name', models.CharField(max_length=190, null=True, blank=True)),
+
+            ('budget_to_invest', models.DecimalField(default=0, max_digits=12, decimal_places=2)),
+            ('gender', models.CharField(max_length=50)),
+            ('status', models.BooleanField(default=True)),
+
+            ('created_at', models.DateTimeField(auto_now_add=True)),
+            ('updated_at', models.DateTimeField(auto_now=True)),
+
+            # --- FKs ---
+            ('country', models.ForeignKey(to='persistence.Country', null=True, blank=True, on_delete=models.RESTRICT)),
+            ('state', models.ForeignKey(to='persistence.State', null=True, blank=True, on_delete=models.RESTRICT)),
+            ('city', models.ForeignKey(to='persistence.City', null=True, blank=True, on_delete=models.RESTRICT)),
+            ('platform', models.ForeignKey(to='persistence.InterestedPlatform', null=True, blank=True, on_delete=models.RESTRICT)),
+            ('occupation', models.ForeignKey(to='persistence.Occupation', null=True, blank=True, on_delete=models.RESTRICT)),
+            ('language', models.ForeignKey(to='persistence.Language', null=True, blank=True, on_delete=models.RESTRICT)),
+        ],
+        options={
+            'db_table': 'sb_users',
+            'indexes': [
+                models.Index(fields=['language'], name='idx_sb_users_language_id'),
+            ],
+            'constraints': [
+                models.CheckConstraint(condition=models.Q(budget_to_invest__gte=0), name='sb_users_budget_chk'),
+            ],
+        },
+    ),  
+
     ]
+
