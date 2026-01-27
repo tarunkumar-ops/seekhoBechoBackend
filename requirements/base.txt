@@ -23,3 +23,5 @@ twilio==9.9.1
 tzdata==2025.3
 urllib3==2.6.3
 yarl==1.22.0
+celery>=5.3
+redis>=5.0

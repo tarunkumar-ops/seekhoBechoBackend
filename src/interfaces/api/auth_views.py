@@ -6,6 +6,7 @@ from src.application.dtos.auth_dtos import RequestOtpInput, VerifyOtpInput
 from src.container import get_container
 from src.interfaces.api.auth_serializers import RequestOtpSerializer, VerifyOtpSerializer
 from src.shared.exceptions import AuthError, ValidationError
+from src.infrastructure.messaging.tasks import send_login_otp_task
 from src.interfaces.api.auth_serializers import RefreshSerializer
 from src.application.dtos.auth_dtos import RefreshTokenInput
 
@@ -18,9 +19,17 @@ class RequestOtpView(APIView):
         ser = RequestOtpSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         try:
-            get_container().request_login_otp().execute(RequestOtpInput(**ser.validated_data))
+            result = get_container().request_login_otp().execute(RequestOtpInput(**ser.validated_data))
         except ValidationError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Dispatch async delivery task (do not wait for it)
+        try:
+            send_login_otp_task.delay(phone=result.get("phone"), email=result.get("email"), otp=result.get("code"), expires_minutes=result.get("expires_minutes"))
+        except Exception:
+            # Do not fail the request if task dispatching fails; logging is sufficient.
+            pass
+
         return Response({"detail": "otp_sent"}, status=status.HTTP_200_OK)
 
 

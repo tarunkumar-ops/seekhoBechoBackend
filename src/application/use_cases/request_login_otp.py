@@ -17,7 +17,7 @@ class RequestLoginOtpUseCase:
         self._otp_sender = otp_sender
         self._ttl_seconds = ttl_seconds
 
-    def execute(self, input_dto: RequestOtpInput) -> None:
+    def execute(self, input_dto: RequestOtpInput) -> dict:
         phone = (input_dto.phone or "").strip() if input_dto.phone else None
         email = (input_dto.email or "").strip() if input_dto.email else None
         if not phone and not email:
@@ -28,12 +28,10 @@ class RequestLoginOtpUseCase:
         code = f"{secrets.randbelow(1_000_000):06d}"
         # store identifier as-is in OTP repo (phone or email)
         identifier = phone or email
+        # Persist synchronously
         self._otp_repo.create_login_otp(phone=identifier, code=code, ttl_seconds=self._ttl_seconds)
         # Convert ttl_seconds to minutes for message template
         expires_minutes = int((self._ttl_seconds + 59) // 60)
-        if phone:
-            phone_norm = normalize_e164(phone)
-            self._otp_sender.send_whatsapp_otp(to_phone=phone_norm, code=code, expires_in_minutes=expires_minutes)
-        else:
-            self._otp_sender.send_email_otp(to_email=email, code=code, expires_in_minutes=expires_minutes)
+        # Return information so interface layer can dispatch async delivery
+        return {"identifier": identifier, "phone": phone, "email": email, "code": code, "expires_minutes": expires_minutes}
 
