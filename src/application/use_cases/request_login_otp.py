@@ -18,10 +18,22 @@ class RequestLoginOtpUseCase:
         self._ttl_seconds = ttl_seconds
 
     def execute(self, input_dto: RequestOtpInput) -> None:
-        phone = normalize_e164(input_dto.phone)
+        phone = (input_dto.phone or "").strip() if input_dto.phone else None
+        email = (input_dto.email or "").strip() if input_dto.email else None
+        if not phone and not email:
+            from src.shared.exceptions import ValidationError
+
+            raise ValidationError("phone or email is required")
+
         code = f"{secrets.randbelow(1_000_000):06d}"
-        self._otp_repo.create_login_otp(phone=phone, code=code, ttl_seconds=self._ttl_seconds)
+        # store identifier as-is in OTP repo (phone or email)
+        identifier = phone or email
+        self._otp_repo.create_login_otp(phone=identifier, code=code, ttl_seconds=self._ttl_seconds)
         # Convert ttl_seconds to minutes for message template
         expires_minutes = int((self._ttl_seconds + 59) // 60)
-        self._otp_sender.send_whatsapp_otp(to_phone=phone, code=code, expires_in_minutes=expires_minutes)
+        if phone:
+            phone_norm = normalize_e164(phone)
+            self._otp_sender.send_whatsapp_otp(to_phone=phone_norm, code=code, expires_in_minutes=expires_minutes)
+        else:
+            self._otp_sender.send_email_otp(to_email=email, code=code, expires_in_minutes=expires_minutes)
 

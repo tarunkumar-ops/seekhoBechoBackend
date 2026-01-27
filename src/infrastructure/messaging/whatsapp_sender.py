@@ -22,6 +22,8 @@ class TwilioWhatsAppOtpSender(OtpSenderPort):
             body=body,
         )
 
+    def send_email_otp(self, *, to_email: str, code: str, expires_in_minutes: int) -> None:
+        raise NotImplementedError("Twilio sender only sends WhatsApp messages")
 
 class DevLoggingWhatsAppOtpSender(OtpSenderPort):
     """
@@ -30,4 +32,7 @@ class DevLoggingWhatsAppOtpSender(OtpSenderPort):
 
     def send_whatsapp_otp(self, *, to_phone: str, code: str, expires_in_minutes: int) -> None:
         logger.info("DEV OTP for %s: %s (expires in %d minutes)", to_phone, code, expires_in_minutes)
+
+    def send_email_otp(self, *, to_email: str, code: str, expires_in_minutes: int) -> None:
+        logger.info("DEV EMAIL OTP for %s: %s (expires in %d minutes)", to_email, code, expires_in_minutes)
 

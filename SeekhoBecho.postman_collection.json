@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "SeekhoBechoBackend",
+    "_postman_id": "seekhobecho-collection-001",
+    "description": "Postman collection for SeekhoBechoBackend API (OTP auth, geo, user).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "email", "value": "tarunkumar@seekhobecho.com" },
+    { "key": "phone", "value": "+919818445669" }
+  ],
+  "item": [
+    {
+      "name": "Auth / Request OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/request-otp/", "host": ["{{baseUrl}}"], "path": ["api","auth","request-otp",""] }
+      },
+      "response": []
+    },
+    {
+      "name": "Auth / Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"123456\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/verify-otp/", "host": ["{{baseUrl}}"], "path": ["api","auth","verify-otp",""] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json.access) {",
+              "  pm.collectionVariables.set('access_token', json.access);",
+              "}",
+              "if (json.refresh) {",
+              "  pm.collectionVariables.set('refresh_token', json.refresh);",
+              "}",
+              "pm.test('status is 200 or 401/400 handled', function () { pm.response.to.be.ok; });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Auth / Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/refresh/", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh",""] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json.access) { pm.collectionVariables.set('access_token', json.access); }",
+              "if (json.refresh) { pm.collectionVariables.set('refresh_token', json.refresh); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Geo / List States (IN)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/geo/states/", "host": ["{{baseUrl}}"], "path": ["api","geo","states",""] }
+      },
+      "response": []
+    },
+    {
+      "name": "Geo / List Cities by State",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/geo/states/:state_id/cities/",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","geo","states",":state_id","cities",""],
+          "variable": [{ "key": "state_id", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User / Get My Profile",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": { "raw": "{{baseUrl}}/api/user/me/", "host": ["{{baseUrl}}"], "path": ["api","user","me",""] }
+      },
+      "response": []
+    },
+    {
+      "name": "User / Update My Profile",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"full_name\": \"Tarun Kumar\",\n  \"email\": \"{{email}}\",\n  \"whatsapp_number\": \"{{phone}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/user/me/", "host": ["{{baseUrl}}"], "path": ["api","user","me",""] }
+      },
+      "response": []
+    }
+  ]
+}

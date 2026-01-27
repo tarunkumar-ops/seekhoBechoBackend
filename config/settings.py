@@ -107,6 +107,13 @@ TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_WHATSAPP_FROM = os.environ.get("TWILIO_WHATSAPP_FROM", "")
 
 
+# SendGrid (email) configuration
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
+SENDGRID_FROM_EMAIL = os.environ.get("SENDGRID_FROM_EMAIL", "")
+SENDGRID_OTP_TEMPLATE_ID = os.environ.get(
+    "SENDGRID_OTP_TEMPLATE_ID", "d-fa12fc6a251140fa9b3d51dba5e54734"
+)
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 

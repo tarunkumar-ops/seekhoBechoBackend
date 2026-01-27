@@ -2,7 +2,8 @@ from django.db import models
 
 
 class LoginOtp(models.Model):
-    phone = models.CharField(max_length=32, db_index=True)
+    # store identifier (phone number in E.164 or email). Increase max_length to support emails.
+    phone = models.CharField(max_length=190, db_index=True)
     code_hash = models.CharField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

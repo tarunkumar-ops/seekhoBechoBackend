@@ -5,13 +5,15 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class RequestOtpInput:
-    phone: str
+    phone: str | None = None
+    email: str | None = None
 
 
 @dataclass(frozen=True)
 class VerifyOtpInput:
-    phone: str
-    code: str
+    phone: str | None = None
+    email: str | None = None
+    code: str = ""
 
 
 @dataclass(frozen=True)
@@ -29,4 +31,43 @@ class RefreshTokenInput:
 class RefreshTokenOutput:
     access: str
     refresh: str
+
+
+@dataclass(frozen=True)
+class UserDetailsOutput:
+    id: int
+    user_code: str | None
+    full_name: str | None
+    whatsapp_number: str | None
+    email: str | None
+    country_id: int | None
+    state_id: int | None
+    city_id: int | None
+    platform_id: int | None
+    occupation_id: int | None
+    language_id: int | None
+    country_name: str | None
+    state_name: str | None
+    city_name: str | None
+    platform_name: str | None
+    occupation_name: str | None
+    language_name: str | None
+    budget_to_invest: str | None
+    gender: str | None
+    status: bool | None
+
+
+@dataclass(frozen=True)
+class UpdateUserInput:
+    full_name: str | None = None
+    email: str | None = None
+    whatsapp_number: str | None = None
+    country_id: int | None = None
+    state_id: int | None = None
+    city_id: int | None = None
+    platform_id: int | None = None
+    occupation_id: int | None = None
+    language_id: int | None = None
+    budget_to_invest: str | None = None
+    gender: str | None = None
 
