@@ -27,6 +27,6 @@ class OtpAuthFlowTests(TestCase):
         )
         self.assertEqual(r2.status_code, 200)
         body = r2.json()
-        self.assertIn("access", body)
-        self.assertIn("refresh", body)
+        self.assertIn("access_token", body)
+        self.assertIn("refresh_token", body)
 

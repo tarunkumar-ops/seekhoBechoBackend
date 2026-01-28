@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
-            options={
+            options={   
                 'db_table': 'sb_category',
                 'indexes': [models.Index(fields=['status'], name='idx_sb_category_status')],
             },

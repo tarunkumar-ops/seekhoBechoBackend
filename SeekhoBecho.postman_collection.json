@@ -45,11 +45,11 @@
           "script": {
             "exec": [
               "var json = pm.response.json();",
-              "if (json.access) {",
-              "  pm.collectionVariables.set('access_token', json.access);",
+              "if (json.access_token) {",
+              "  pm.collectionVariables.set('access_token', json.access_token);",
               "}",
-              "if (json.refresh) {",
-              "  pm.collectionVariables.set('refresh_token', json.refresh);",
+              "if (json.refresh_token) {",
+              "  pm.collectionVariables.set('refresh_token', json.refresh_token);",
               "}",
               "pm.test('status is 200 or 401/400 handled', function () { pm.response.to.be.ok; });"
             ],
@@ -76,8 +76,8 @@
           "script": {
             "exec": [
               "var json = pm.response.json();",
-              "if (json.access) { pm.collectionVariables.set('access_token', json.access); }",
-              "if (json.refresh) { pm.collectionVariables.set('refresh_token', json.refresh); }"
+              "if (json.access_token) { pm.collectionVariables.set('access_token', json.access_token); }",
+              "if (json.refresh_token) { pm.collectionVariables.set('refresh_token', json.refresh_token); }"
             ],
             "type": "text/javascript"
           }
