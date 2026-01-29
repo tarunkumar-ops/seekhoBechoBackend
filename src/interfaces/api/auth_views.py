@@ -21,7 +21,7 @@ class RequestOtpView(APIView):
         try:
             result = get_container().request_login_otp().execute(RequestOtpInput(**ser.validated_data))
         except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         # Dispatch async delivery task (do not wait for it)
         try:
@@ -30,7 +30,7 @@ class RequestOtpView(APIView):
             # Do not fail the request if task dispatching fails; logging is sufficient.
             pass
 
-        return Response({"detail": "otp_sent"}, status=status.HTTP_200_OK)
+        return Response({"message": "otp_sent"}, status=status.HTTP_200_OK)
 
 
 class VerifyOtpView(APIView):
@@ -43,7 +43,7 @@ class VerifyOtpView(APIView):
         try:
             out = get_container().verify_login_otp().execute(VerifyOtpInput(**ser.validated_data))
         except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except AuthError as e:
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         # Return industry-standard token names
@@ -60,7 +60,7 @@ class RefreshTokenView(APIView):
         try:
             out = get_container().refresh_tokens().execute(RefreshTokenInput(**ser.validated_data))
         except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except AuthError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"message": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({"access_token": out.access, "refresh_token": out.refresh}, status=status.HTTP_200_OK)

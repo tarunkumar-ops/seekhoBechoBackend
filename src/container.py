@@ -15,6 +15,8 @@ from src.application.use_cases.refresh_tokens import RefreshTokensUseCase
 from src.infrastructure.persistence.repositories.geo_repository import DjangoGeoRepository
 from src.application.use_cases.list_states import ListStatesUseCase
 from src.application.use_cases.list_cities import ListCitiesUseCase
+from src.application.use_cases.list_cities_with_state import ListCitiesWithStateUseCase
+from src.application.use_cases.list_cities_search import ListCitiesSearchUseCase
 from src.application.use_cases.get_user_details import GetUserDetailsUseCase
 from src.application.use_cases.update_user_details import UpdateUserDetailsUseCase
 
@@ -59,6 +61,12 @@ class Container:
 
     def list_cities(self) -> ListCitiesUseCase:
         return ListCitiesUseCase(geo_repo=self._geo_repo)
+
+    def list_cities_with_state(self) -> ListCitiesWithStateUseCase:
+        return ListCitiesWithStateUseCase(geo_repo=self._geo_repo)
+
+    def list_cities_search(self) -> ListCitiesSearchUseCase:
+        return ListCitiesSearchUseCase(geo_repo=self._geo_repo)
 
     def get_user_details(self) -> GetUserDetailsUseCase:
         return GetUserDetailsUseCase(user_repo=self._user_repo)

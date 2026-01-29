@@ -102,10 +102,24 @@
         "method": "GET",
         "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
         "url": {
-          "raw": "{{baseUrl}}/api/geo/states/:state_id/cities/",
+          "raw": "{{baseUrl}}/api/geo/cities/?q={{q}}",
           "host": ["{{baseUrl}}"],
-          "path": ["api","geo","states",":state_id","cities",""],
-          "variable": [{ "key": "state_id", "value": "1" }]
+          "path": ["api","geo","cities",""],
+          "query": [{ "key": "q", "value": "{{q}}"}]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Geo / Get City and State by city_id",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/geo/cities/?city_id={{city_id}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","geo","cities",""],
+          "query": [{ "key": "city_id", "value": "{{city_id}}"}]
         }
       },
       "response": []
