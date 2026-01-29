@@ -156,3 +156,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
 # Do not use result backend for this use-case
 CELERY_RESULT_BACKEND = None
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
