@@ -157,5 +157,8 @@ CELERY_ACCEPT_CONTENT = ["json"]
 # Do not use result backend for this use-case
 CELERY_RESULT_BACKEND = None
 
+# Geo default country ISO2 (used by geo endpoints). Read from environment.
+GEO_DEFAULT_COUNTRY_ISO2 = os.environ.get("GEO_DEFAULT_COUNTRY_ISO2", "IN")
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 

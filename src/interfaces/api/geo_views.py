@@ -6,19 +6,6 @@ from src.container import get_container
 from src.interfaces.api.geo_serializers import StateSerializer, CitySerializer
 
 
-class CitiesWithStateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, state_id: int):
-        # Deprecated; keep for backward compatibility
-        state, cities = get_container().list_cities_with_state().execute(state_id=int(state_id))
-        if state is None:
-            return Response({"message": "state not found"}, status=status.HTTP_404_NOT_FOUND)
-        state_ser = StateSerializer(state)
-        city_ser = CitySerializer(cities, many=True)
-        return Response({"state": state_ser.data, "cities": city_ser.data}, status=status.HTTP_200_OK)
-
-
 class CitiesSearchView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
