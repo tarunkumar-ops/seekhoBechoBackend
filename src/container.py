@@ -21,6 +21,7 @@ from src.application.use_cases.list_cities_search import ListCitiesSearchUseCase
 from src.application.use_cases.get_prefill_config import GetPrefillConfigUseCase
 from src.application.use_cases.get_user_details import GetUserDetailsUseCase
 from src.application.use_cases.update_user_details import UpdateUserDetailsUseCase
+from src.infrastructure.persistence.repositories.config_repository import DjangoConfigRepository
 
 
 class Container:
