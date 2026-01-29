@@ -15,7 +15,7 @@ class UserDetailsView(APIView):
         user_id = int(request.user.id)
         out = get_container().get_user_details().execute(user_id=user_id)
         if out is None:
-            return Response({"detail": "not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "not found"}, status=status.HTTP_404_NOT_FOUND)
         ser = UserDetailsSerializer(out.__dict__)
         return Response(ser.data, status=status.HTTP_200_OK)
 
@@ -26,8 +26,8 @@ class UserDetailsView(APIView):
         try:
             out = get_container().update_user_details().execute(user_id=int(request.user.id), input_dto=input_dto)
         except ValidationError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         if out is None:
-            return Response({"detail": "not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "not found"}, status=status.HTTP_404_NOT_FOUND)
         return Response(UserDetailsSerializer(out.__dict__).data, status=status.HTTP_200_OK)
 
