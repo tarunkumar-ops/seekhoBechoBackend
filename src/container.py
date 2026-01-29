@@ -9,6 +9,7 @@ from src.infrastructure.messaging.whatsapp_sender import (
 )
 from src.infrastructure.messaging.sendgrid_sender import SendGridEmailOtpSender
 from src.infrastructure.messaging.composite_sender import CompositeOtpSender
+
 from src.infrastructure.persistence.repositories.otp_repository import DjangoLoginOtpRepository
 from src.infrastructure.persistence.repositories.user_repository import DjangoUserRepository
 from src.application.use_cases.refresh_tokens import RefreshTokensUseCase
@@ -17,6 +18,7 @@ from src.application.use_cases.list_states import ListStatesUseCase
 from src.application.use_cases.list_cities import ListCitiesUseCase
 from src.application.use_cases.list_cities_with_state import ListCitiesWithStateUseCase
 from src.application.use_cases.list_cities_search import ListCitiesSearchUseCase
+from src.application.use_cases.get_prefill_config import GetPrefillConfigUseCase
 from src.application.use_cases.get_user_details import GetUserDetailsUseCase
 from src.application.use_cases.update_user_details import UpdateUserDetailsUseCase
 
@@ -42,6 +44,8 @@ class Container:
         self._otp_sender = CompositeOtpSender(whatsapp_sender=self._otp_sender, email_sender=email_sender)
         # Geo repo
         self._geo_repo = DjangoGeoRepository()
+        # Config repo (occupations / platforms)
+        self._config_repo = DjangoConfigRepository()
 
     def request_login_otp(self) -> RequestLoginOtpUseCase:
         return RequestLoginOtpUseCase(otp_repo=self._otp_repo, otp_sender=self._otp_sender)
@@ -67,6 +71,9 @@ class Container:
 
     def list_cities_search(self) -> ListCitiesSearchUseCase:
         return ListCitiesSearchUseCase(geo_repo=self._geo_repo)
+
+    def get_prefill_config(self) -> GetPrefillConfigUseCase:
+        return GetPrefillConfigUseCase(repo=self._config_repo)
 
     def get_user_details(self) -> GetUserDetailsUseCase:
         return GetUserDetailsUseCase(user_repo=self._user_repo)
