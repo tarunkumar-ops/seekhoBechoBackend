@@ -19,3 +19,7 @@ local_settings.py
 # IDE
 .vscode/
 .idea/
+
+#static files
+staticfiles/
+
