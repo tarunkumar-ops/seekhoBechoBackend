@@ -17,6 +17,8 @@ from .subscription import SbSubscription
 from .subscription_benefits import SbSubscriptionBenefits
 from .subscription_media import SbSubscriptionMedia
 from .user_interested_platform import SbUserInterestedPlatform
+from .media import SbMedia
+from .banner import SbBanner
 
 __all__ = [
     "LoginOtp",
@@ -36,4 +38,6 @@ __all__ = [
     "SbSubscriptionBenefits",
     "SbSubscriptionMedia",
     "SbUserInterestedPlatform",
+    "SbMedia",
+    "SbBanner",
 ]

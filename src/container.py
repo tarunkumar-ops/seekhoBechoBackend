@@ -14,6 +14,7 @@ from src.infrastructure.persistence.repositories.otp_repository import DjangoLog
 from src.infrastructure.persistence.repositories.user_repository import DjangoUserRepository
 from src.application.use_cases.refresh_tokens import RefreshTokensUseCase
 from src.infrastructure.persistence.repositories.geo_repository import DjangoGeoRepository
+from src.infrastructure.persistence.repositories.banner_repository import DjangoBannerRepository
 from src.application.use_cases.list_states import ListStatesUseCase
 from src.application.use_cases.list_cities import ListCitiesUseCase
 from src.application.use_cases.list_cities_with_state import ListCitiesWithStateUseCase
@@ -47,6 +48,8 @@ class Container:
         self._geo_repo = DjangoGeoRepository()
         # Config repo (occupations / platforms)
         self._config_repo = DjangoConfigRepository()
+        # Banner repo
+        self._banner_repo = DjangoBannerRepository()
 
     def request_login_otp(self) -> RequestLoginOtpUseCase:
         return RequestLoginOtpUseCase(otp_repo=self._otp_repo, otp_sender=self._otp_sender)
@@ -75,6 +78,11 @@ class Container:
 
     def get_prefill_config(self) -> GetPrefillConfigUseCase:
         return GetPrefillConfigUseCase(repo=self._config_repo)
+
+    def list_banners(self) -> "ListBannersUseCase":
+        from src.application.use_cases.list_banners import ListBannersUseCase
+
+        return ListBannersUseCase(banner_repo=self._banner_repo)
 
     def get_user_details(self) -> GetUserDetailsUseCase:
         return GetUserDetailsUseCase(user_repo=self._user_repo)
