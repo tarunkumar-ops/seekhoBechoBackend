@@ -9,7 +9,11 @@ class UpdateUserDetailsUseCase:
     def execute(self, user_id: int, input_dto: UpdateUserInput) -> UserDetailsOutput | None:
         # convert dataclass to dict excluding None
         data = {k: v for k, v in input_dto.__dict__.items() if v is not None}
+        # Extract platform_ids before updating user fields
+        platform_ids = data.pop("platform_ids", None)
         updated = self._user_repo.update_user(user_id=user_id, data=data)
+        if platform_ids is not None:
+            self._user_repo.set_user_interested_platforms(user_id=user_id, platform_ids=platform_ids)
         if not updated:
             return None
         return UserDetailsOutput(**updated)

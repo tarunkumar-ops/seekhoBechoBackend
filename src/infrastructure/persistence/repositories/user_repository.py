@@ -4,6 +4,7 @@ import secrets
 
 from src.application.ports.auth import UserRepositoryPort
 from src.application.dtos.auth_dtos import UserDetailsOutput
+from src.infrastructure.persistence.models import SbUserInterestedPlatform, InterestedPlatform
 
 
 class DjangoUserRepository(UserRepositoryPort):
@@ -23,7 +24,7 @@ class DjangoUserRepository(UserRepositoryPort):
             lookup = {"email": phone}
             user = User.objects.filter(**lookup).first()
             if user:
-                return int(user.id)
+                return int(user.id), False
 
             # Create using email field; set username_field if different and valid length.
             user_code = f"U{int(timezone.now().timestamp())}{secrets.randbelow(10_000):04d}"
@@ -43,13 +44,13 @@ class DjangoUserRepository(UserRepositoryPort):
                 create_kwargs["status"] = True
 
             user = User.objects.create(**create_kwargs)
-            return int(user.id)
+            return int(user.id), True
 
         # Otherwise treat as phone identifier
         lookup = {username_field: phone}
         user = User.objects.filter(**lookup).first()
         if user:
-            return int(user.id)
+            return int(user.id), False
 
         # Create a minimal user record for phone identifier.
         user_code = f"U{int(timezone.now().timestamp())}{secrets.randbelow(10_000):04d}"
@@ -61,7 +62,7 @@ class DjangoUserRepository(UserRepositoryPort):
             create_kwargs["status"] = True
 
         user = User.objects.create(**create_kwargs)
-        return int(user.id)
+        return int(user.id), True
 
     def get_user_by_id(self, *, user_id: int) -> dict:
         User = get_user_model()
@@ -79,19 +80,27 @@ class DjangoUserRepository(UserRepositoryPort):
             "country_id": getattr(user, "country_id", None),
             "state_id": getattr(user, "state_id", None),
             "city_id": getattr(user, "city_id", None),
-            "platform_id": getattr(user, "platform_id", None),
             "occupation_id": getattr(user, "occupation_id", None),
             "language_id": getattr(user, "language_id", None),
             "country_name": getattr(user, "country_name", None),
             "state_name": getattr(user, "state_name", None),
             "city_name": getattr(user, "city_name", None),
-            "platform_name": getattr(user, "platform_name", None),
             "occupation_name": getattr(user, "occupation_name", None),
             "language_name": getattr(user, "language_name", None),
             "budget_to_invest": str(getattr(user, "budget_to_invest", None)),
             "gender": getattr(user, "gender", None),
             "status": getattr(user, "status", None),
         }
+        # load interested platforms from mapping table
+        plats = (
+            SbUserInterestedPlatform.objects.filter(user_id=user_id)
+            .select_related("platform")
+            .order_by("platform__title")
+        )
+        data["interested_platforms"] = [
+            {"id": int(p.platform.id), "title": p.platform.title} for p in plats
+        ]
+        return data
         return data
 
     def update_user(self, *, user_id: int, data: dict) -> dict:
@@ -108,4 +117,17 @@ class DjangoUserRepository(UserRepositoryPort):
                 setattr(user, k, v)
         user.save(update_fields=[k for k in data.keys() if k in field_names])
         return self.get_user_by_id(user_id=user.id)
+
+    def set_user_interested_platforms(self, *, user_id: int, platform_ids: list[int]) -> None:
+        # Replace existing mappings atomically
+        from django.db import transaction
+
+        with transaction.atomic():
+            SbUserInterestedPlatform.objects.filter(user_id=user_id).delete()
+            objs = []
+            for pid in platform_ids:
+                objs.append(
+                    SbUserInterestedPlatform(user_id=user_id, platform_id=pid)
+                )
+            SbUserInterestedPlatform.objects.bulk_create(objs, ignore_conflicts=True)
 

@@ -20,6 +20,8 @@ class VerifyOtpInput:
 class VerifyOtpOutput:
     access: str
     refresh: str
+    new_user: bool
+    is_profile_complete: bool
 
 
 @dataclass(frozen=True)
@@ -43,18 +45,18 @@ class UserDetailsOutput:
     country_id: int | None
     state_id: int | None
     city_id: int | None
-    platform_id: int | None
     occupation_id: int | None
     language_id: int | None
     country_name: str | None
     state_name: str | None
     city_name: str | None
-    platform_name: str | None
+    # platform_name removed; use interested_platforms list instead
     occupation_name: str | None
     language_name: str | None
     budget_to_invest: str | None
     gender: str | None
     status: bool | None
+    interested_platforms: list[dict] | None = None
 
 
 @dataclass(frozen=True)
@@ -65,7 +67,7 @@ class UpdateUserInput:
     country_id: int | None = None
     state_id: int | None = None
     city_id: int | None = None
-    platform_id: int | None = None
+    platform_ids: list[int] | None = None
     occupation_id: int | None = None
     language_id: int | None = None
     budget_to_invest: str | None = None

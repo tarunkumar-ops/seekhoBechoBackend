@@ -39,12 +39,6 @@ class SbUser(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True
     )
-    platform = models.ForeignKey(
-        "persistence.InterestedPlatform",
-        on_delete=models.RESTRICT,
-        null=True,
-        blank=True
-    )
     occupation = models.ForeignKey(
         "persistence.Occupation",
         on_delete=models.RESTRICT,
@@ -62,7 +56,6 @@ class SbUser(AbstractBaseUser, PermissionsMixin):
     country_name = models.CharField(max_length=190, null=True, blank=True)
     state_name = models.CharField(max_length=190, null=True, blank=True)
     city_name = models.CharField(max_length=190, null=True, blank=True)
-    platform_name = models.CharField(max_length=190, null=True, blank=True)
     occupation_name = models.CharField(max_length=190, null=True, blank=True)
     language_name = models.CharField(max_length=190, null=True, blank=True)
 

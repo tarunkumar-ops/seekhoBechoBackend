@@ -46,8 +46,14 @@ class VerifyOtpView(APIView):
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except AuthError as e:
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-        # Return industry-standard token names
-        return Response({"access_token": out.access, "refresh_token": out.refresh}, status=status.HTTP_200_OK)
+        # Return industry-standard token names plus user flags
+        resp = {
+            "access_token": out.access,
+            "refresh_token": out.refresh,
+            "new_user": getattr(out, "new_user", False),
+            "is_profile_complete": getattr(out, "is_profile_complete", False),
+        }
+        return Response(resp, status=status.HTTP_200_OK)
 
 
 class RefreshTokenView(APIView):

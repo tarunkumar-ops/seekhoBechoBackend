@@ -38,7 +38,30 @@ class VerifyLoginOtpUseCase:
         ok = self._otp_repo.verify_and_consume(phone=identifier, code=code, max_attempts=self._max_attempts)
         if not ok:
             raise AuthError("invalid or expired code")
-        user_id = self._user_repo.get_or_create_user_id_by_phone(phone=identifier)
+
+        user_id, created = self._user_repo.get_or_create_user_id_by_phone(phone=identifier)
+
+        # assess profile completeness
+        user_data = self._user_repo.get_user_by_id(user_id=user_id)
+        required_fields = [
+            "full_name",
+            "city_id",
+            "state_id",
+            "whatsapp_number",
+            "email",
+            "budget_to_invest",
+            "gender",
+            "occupation_id",
+        ]
+        is_complete = True
+        for f in required_fields:
+            val = user_data.get(f)
+            if val is None or (isinstance(val, str) and not str(val).strip()):
+                is_complete = False
+                break
+        if not user_data.get("interested_platforms"):
+            is_complete = False
+
         tokens = self._token_provider.issue_tokens_for_user_id(user_id=user_id)
-        return VerifyOtpOutput(access=tokens.access, refresh=tokens.refresh)
+        return VerifyOtpOutput(access=tokens.access, refresh=tokens.refresh, new_user=created, is_profile_complete=is_complete)
 
