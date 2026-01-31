@@ -23,6 +23,10 @@ from src.application.use_cases.get_prefill_config import GetPrefillConfigUseCase
 from src.application.use_cases.get_user_details import GetUserDetailsUseCase
 from src.application.use_cases.update_user_details import UpdateUserDetailsUseCase
 from src.infrastructure.persistence.repositories.config_repository import DjangoConfigRepository
+from src.infrastructure.storage.r2_service import R2Service
+from src.application.use_cases.presign_media import PresignMediaUseCase
+from src.application.use_cases.confirm_media import ConfirmMediaUseCase
+from src.infrastructure.persistence.repositories.media_repository import DjangoMediaRepository
 
 
 class Container:
@@ -50,6 +54,10 @@ class Container:
         self._config_repo = DjangoConfigRepository()
         # Banner repo
         self._banner_repo = DjangoBannerRepository()
+        # R2 service
+        self._r2_service = R2Service()
+        # Media repo
+        self._media_repo = DjangoMediaRepository()
 
     def request_login_otp(self) -> RequestLoginOtpUseCase:
         return RequestLoginOtpUseCase(otp_repo=self._otp_repo, otp_sender=self._otp_sender)
@@ -81,8 +89,18 @@ class Container:
 
     def list_banners(self) -> "ListBannersUseCase":
         from src.application.use_cases.list_banners import ListBannersUseCase
-
         return ListBannersUseCase(banner_repo=self._banner_repo)
+
+    def create_banner(self):
+        from src.application.use_cases.create_banner import CreateBannerUseCase
+
+        return CreateBannerUseCase(banner_repo=self._banner_repo)
+
+    def presign_media(self) -> PresignMediaUseCase:
+        return PresignMediaUseCase(r2_service=self._r2_service)
+
+    def confirm_media(self) -> ConfirmMediaUseCase:
+        return ConfirmMediaUseCase(media_repo=self._media_repo)
 
     def get_user_details(self) -> GetUserDetailsUseCase:
         return GetUserDetailsUseCase(user_repo=self._user_repo)

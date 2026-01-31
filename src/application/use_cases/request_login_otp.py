@@ -29,7 +29,7 @@ class RequestLoginOtpUseCase:
         # store identifier as-is in OTP repo (phone or email)
         identifier = phone or email
         # Persist synchronously
-        self._otp_repo.create_login_otp(phone=identifier, code=code, ttl_seconds=self._ttl_seconds)
+        self._otp_repo.create_login_otp(phone=identifier, code=code, ttl_seconds=self.  _ttl_seconds)
         # Convert ttl_seconds to minutes for message template
         expires_minutes = int((self._ttl_seconds + 59) // 60)
         # Return information so interface layer can dispatch async delivery
