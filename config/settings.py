@@ -157,6 +157,18 @@ CELERY_ACCEPT_CONTENT = ["json"]
 # Do not use result backend for this use-case
 CELERY_RESULT_BACKEND = None
 
+# Cloudflare R2 configuration (S3-compatible)
+# These are read from environment (.env) and must be set in your deployment.
+R2_ENDPOINT_URL = os.environ.get("R2_ENDPOINT_URL", "")
+R2_BUCKET = os.environ.get("R2_BUCKET", "")
+R2_ACCESS_KEY_ID = os.environ.get("R2_ACCESS_KEY_ID", "")
+R2_SECRET_ACCESS_KEY = os.environ.get("R2_SECRET_ACCESS_KEY", "")
+# Optional public base URL (e.g., CDN domain) to build public media URLs
+R2_PUBLIC_BASE_URL = os.environ.get("R2_PUBLIC_BASE_URL", "")
+R2_REGION = os.environ.get("R2_REGION", "")
+# Presigned URL expiry for uploads (seconds)
+PRESIGN_EXPIRES_SECONDS = int(os.environ.get("PRESIGN_EXPIRES_SECONDS", "300"))
+
 # Geo default country ISO2 (used by geo endpoints). Read from environment.
 GEO_DEFAULT_COUNTRY_ISO2 = os.environ.get("GEO_DEFAULT_COUNTRY_ISO2", "IN")
 

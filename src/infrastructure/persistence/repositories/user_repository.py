@@ -110,12 +110,35 @@ class DjangoUserRepository(UserRepositoryPort):
         except User.DoesNotExist:
             return {}
 
+        # Validate uniqueness for email and whatsapp_number before updating
+        from src.shared.exceptions import ValidationError
+        from django.db import IntegrityError
+
+        # If updating email, ensure no other user has the same email
+        new_email = data.get("email")
+        if new_email:
+            exists = User.objects.filter(email=new_email).exclude(pk=user_id).exists()
+            if exists:
+                raise ValidationError("email already exists")
+
+        # If updating whatsapp_number, ensure uniqueness
+        if "whatsapp_number" in data:
+            new_whatsapp = data.get("whatsapp_number")
+            if new_whatsapp:
+                exists = User.objects.filter(whatsapp_number=new_whatsapp).exclude(pk=user_id).exists()
+                if exists:
+                    raise ValidationError("whatsapp_number already exists")
+
         # Only allow updating fields that exist on the model
         field_names = {f.name for f in User._meta.get_fields()}
         for k, v in data.items():
             if k in field_names:
                 setattr(user, k, v)
-        user.save(update_fields=[k for k in data.keys() if k in field_names])
+        try:
+            user.save(update_fields=[k for k in data.keys() if k in field_names])
+        except IntegrityError as e:
+            # Convert DB integrity errors into a user-friendly validation error
+            raise ValidationError("unique constraint violated") from e
         return self.get_user_by_id(user_id=user.id)
 
     def set_user_interested_platforms(self, *, user_id: int, platform_ids: list[int]) -> None:

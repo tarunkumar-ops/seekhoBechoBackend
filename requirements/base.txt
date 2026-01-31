@@ -23,6 +23,6 @@ twilio==9.9.1
 tzdata==2025.3
 urllib3==2.6.3
 yarl==1.22.0
-boto3==2.10.3
+boto3>=1.26,<3
 celery>=5.3
 redis>=5.0
